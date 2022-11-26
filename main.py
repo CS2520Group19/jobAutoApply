@@ -9,6 +9,7 @@ import unittest
 
 #Open microsoft edge
 browser = webdriver.Edge()
+browser.maximize_window()
 email = "pclass184@gmail.com"
 passW = "-Y5bKwD5_QSZNdE"
 
@@ -17,13 +18,20 @@ def login():
     WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.XPATH, "//input[@id='session_key']")))
     browser.find_element(By.NAME,"session_key").send_keys(email)
     browser.find_element(By.NAME,"session_password").send_keys(passW)
-    time.sleep(3)
+    time.sleep(1)
     browser.find_element(By.CLASS_NAME,"sign-in-form__submit-button").click()
-    
+
+#Filter jobs by easy apply
+def filterJobs():
+    browser.get("https://www.linkedin.com/jobs/search/")
+    WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']")))
+    browser.find_element(By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']").click()
+
 def main():
     #Open linkedin.com
     browser.get('http://www.linkedin.com')
     login()
+    filterJobs()
     time.sleep(10)
     browser.quit()
 
