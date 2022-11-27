@@ -52,7 +52,26 @@ def main():
     browser.get('http://www.linkedin.com')
     login()
     filterJobs()
-    applyToJob()
+    time.sleep(1)
+    
+    #List of jobs
+    listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
+    #Iterate through each job
+    x= 0 #Number of listings to go through
+    
+    #Go through 50 listings
+    while(x < 50):
+        for listing in listings:
+            listing.click()
+            time.sleep(2)
+        #Update url to load new job listings
+        x += 10
+        browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3360953405&geoId=103644278&keywords=software%20engineer&location=United%20States&refresh=true&start="+str(x))
+        time.sleep(4)
+        listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
+    
+            
+    #applyToJob()
     time.sleep(10)
     browser.quit()
 
