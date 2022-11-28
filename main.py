@@ -14,6 +14,7 @@ browser = webdriver.Edge()
 browser.maximize_window()
 email = "pclass184@gmail.com"
 passW = "-Y5bKwD5_QSZNdE"
+actions = ActionChains(browser)
 
 #Login to website
 def login():
@@ -33,18 +34,37 @@ def applyToJob():
     time.sleep(2)
     #Find apply button
     browser.find_element(By.XPATH,"//div[@class='jobs-apply-button--top-card']").click()
-    time.sleep(1)
+    time.sleep(2)
     #Select phone number text field
-    browser.find_element(By.XPATH,"//div[@class='display-flex']").click()
+    browser.find_element(By.XPATH,"//span[(contains(., 'Phone') or contains(., 'phone')) and not(contains(., 'country'))]").click() 
     time.sleep(3)
     #Type into phone number text field
-    actions = ActionChains(browser)
     actions.send_keys('111-111-1111')
     actions.perform()
     #Click next
-    browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
+    try:    
+        browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
+    except:
+        print("Not found")
+        exitApplication()
+    exitApplication()
+    time.sleep(3)
     
-    
+#Exit the job application (Used when application is not supported)
+def exitApplication():
+    browser.find_element(By.XPATH,"//li-icon[@class='artdeco-button__icon' and @type='cancel-icon']").click()
+    time.sleep(2)
+    browser.find_element(By.XPATH,"//span[contains(., 'Discard')]").click() 
+
+
+def checkExperience():
+    try:
+        el = browser.find_element((By.XPATH,"//button[phone(string(), 'phone')]"))
+        actions.move_to_element_with_offset(el,10,10)
+        actions.click()
+        actions.perform()
+    except:
+        print('Item not found')
     
 
 def main():
@@ -63,6 +83,7 @@ def main():
     while(x < 50):
         for listing in listings:
             listing.click()
+            applyToJob()
             time.sleep(2)
         #Update url to load new job listings
         x += 10
