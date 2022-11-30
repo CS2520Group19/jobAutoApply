@@ -7,6 +7,7 @@ from selenium.webdriver.remote.webelement import WebElement
 import time 
 import unittest
 from selenium.webdriver.common.action_chains import ActionChains
+import traceback
 
 
 
@@ -40,43 +41,61 @@ def applyToJob():
     browser.find_element(By.XPATH,"//span[(contains(., 'Phone') or contains(., 'phone')) and not(contains(., 'country'))]").click() 
     time.sleep(1)
     #Type into phone number text field
-    actions.send_keys('111-111-1111')
-    actions.perform()
-    nextButton()
-    #Click next
-    resumeScreen = browser.find_elements(By.XPATH,"//h3[contains(., 'Resume') and @class='t-16 t-bold']")
-    #If simple resume screen hit next
-    if len(resumeScreen) > 0:
-        nextButton()
-        time.sleep(1)
-    #Answer experience questions that have a textfield.
+    #actions.send_keys('111-111-1111')
+    #actions.perform()
+    #Check to see if application is simple (Only need to hit submit button)
+    submitButton = browser.find_elements(By.XPATH,"//button[@aria-label='Submit application']")
+    if len(submitButton) > 0:
+        submitButton[0].click() #commented out so application is not sent for test run
+        time.sleep(2)
+        browser.find_element(By.XPATH,"//li-icon[@type='cancel-icon' and @class='artdeco-button__icon']").click()
+        return
+    
+    try:    
+        browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
+    except:
+        print("Next Failed.")
+    # #Click next
+    # resumeScreen = browser.find_elements(By.XPATH,"//h3[contains(., 'Resume') and @class='t-16 t-bold']")
+    # #If simple resume screen hit next
+    # if len(resumeScreen) > 0:
+    #     try:    
+    #         browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
+    #     except:
+    #         print("Check resume screen failed.")
+    #     time.sleep(1)
+    
     submitted = False
     iterations = 0
-    while submitted == False and iterations < 6:
+    while submitted == False and iterations < 4:
         try:
             submitted = nextButton()
+            print(submitted)
             iterations += 1
+            print(iterations)
         except:
-            print("next button exception")
+            print("next button exception in method ApplyToJob()")
     exitApplication()
     time.sleep(3)
     
 def nextButton():
     #Click next button
+    time.sleep(1)
     try:    
         browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
     except:
         print("Next button not found")
-        exitApplication()
-    time.sleep(2)
+    time.sleep(1)
     checkExperience()
-    time.sleep(5)
+    time.sleep(1)
     #Answer all tasks
     try:
         answerMultipleChoice()
-        time.sleep(2)
+        time.sleep(1)
+        answerSelect()
+        time.sleep(1)
         languageProficiency()
-        time.sleep(2)
+        time.sleep(1)
     except:
         print("Language check not found")
     
@@ -87,6 +106,7 @@ def nextButton():
         reviewApp[0].click()
         time.sleep(2)
         submitApplication()
+        print("Application submitted")
         return True
     return False
     
@@ -103,10 +123,13 @@ def exitApplication():
 
 #If questions asks for years + experience, type 1 in text field
 def checkExperience():
-    experienceQs = browser.find_elements(By.XPATH,"//span[contains(., 'years') and contains(@class, 't-14')]")
+    experienceQs = browser.find_elements(By.XPATH,"//span[(contains(., 'experience') or contains(., 'Experience')) and contains(@class, 't-14')]")
     for question in experienceQs:
         question.click()
         time.sleep(1)
+        for i in range(3):
+            actions.send_keys(Keys.BACKSPACE)
+        actions.perform()
         actions.send_keys('1')
         actions.perform()
         time.sleep(1)
@@ -128,20 +151,30 @@ def answerMultipleChoice():
         actions.perform()
     time.sleep(1)
 
+def answerSelect():
+    dropDown = browser.find_elements(By.XPATH,"//select[@class='  fb-dropdown__select']")
+    for items in dropDown:
+        items.click()
+        time.sleep(1)
+        actions.send_keys("yes")
+        actions.perform()
+    time.sleep(1)
+
 #Click submit button
 def submitApplication():
     #Scroll down to ensure visibility of button
     for i in range(8):
         actions.send_keys(Keys.ARROW_DOWN)
         actions.perform()
-    time.sleep(3)
     WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.XPATH,"//button[@aria-label='Submit application']")))
     submitButton = browser.find_elements(By.XPATH,"//button[@aria-label='Submit application']")
     if len(submitButton) > 0:
-        print("submitting")
-        time.sleep(10)
+        # print("submitting")
+        # time.sleep(10)
+        submitButton[0].click() #commented out so application is not sent for test run
+        time.sleep(2)
+        browser.find_element(By.XPATH,"//li-icon[@type='cancel-icon' and @class='artdeco-button__icon']").click()
         return True
-        #submitButton[0].click() commented out so application is not sent for test run
     print(f"Submit button length is: {len(submitButton)}")
     return False
     
@@ -150,9 +183,9 @@ def main():
     #Open linkedin.com
     browser.get('http://www.linkedin.com')
     login()
-    time.sleep(15) #Remove if no captcha
+    #time.sleep(15) #Remove if no captcha
     filterJobs()
-    time.sleep(1)
+    time.sleep(2)
     
     #List of jobs
     listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
@@ -162,12 +195,11 @@ def main():
     #Go through 50 listings
     while(x < 50):
         for listing in listings:
-            listing.click()
             try:
+                listing.click()
                 applyToJob()
             except:
-                print("Error applying to job")
-                exitApplication()
+                traceback.print_exc()
             time.sleep(2)
         #Update url to load new job listings
         x += 10
