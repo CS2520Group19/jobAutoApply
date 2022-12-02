@@ -18,6 +18,8 @@ email = "pclass184@gmail.com"
 passW = "-Y5bKwD5_QSZNdE"
 actions = ActionChains(browser)
 
+skills = {"java","c++"}
+
 #Login to website
 def login():
     WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.XPATH, "//input[@id='session_key']")))
@@ -28,7 +30,7 @@ def login():
 
 #Filter jobs by easy apply
 def filterJobs():
-    browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3383345613&geoId=103644278&keywords=franklin%20fitch%20system%20engineer&location=United%20States&refresh=true@start=5")
+    browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3377842807&geoId=103644278&keywords=software%20engineer&location=United%20States&refresh=true")
     WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']")))
     browser.find_element(By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']").click()
     
@@ -86,6 +88,7 @@ def nextButton():
     time.sleep(1)
     checkExperience()
     time.sleep(1)
+    checkSkills()
     #Answer all tasks
     try:
         answerMultipleChoice()
@@ -128,15 +131,15 @@ def visaCheck():
     
     try:
         legend = visaExist[0].find_element(By.XPATH,"./..")
-        print(legend.tag_name)
+        #print(legend.tag_name)
         fieldset = legend.find_element(By.XPATH,"./..")
-        print(fieldset.tag_name)
+        #print(fieldset.tag_name)
         div = fieldset.find_element(By.XPATH,"//div[@class='fb-radio-buttons']")
-        print(div.tag_name)
+        #print(div.tag_name)
         buttons = div.find_elements(By.XPATH,"//div[@class='fb-radio display-flex']")
-        print(len(buttons))
+        #print(len(buttons))
         noB = buttons[1]
-        print(noB.tag_name)
+        #print(noB.tag_name)
         noInput = noB.find_element(By.XPATH,"//input[@value='No']")
         actions.click(noInput)
         actions.perform()
@@ -208,7 +211,20 @@ def submitApplication():
         return True
     print(f"Submit button length is: {len(submitButton)}")
     return False
-    
+
+def checkSkills():
+    for skill in skills:
+        relevantSkill = browser.find_elements(By.XPATH,f"//span[contains(translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{skill}') and contains(@class, 't-14') ]")
+        
+        if len(relevantSkill) > 0:
+            relevantSkill[0].click()
+        for i in range(5):
+            actions.send_keys(Keys.BACKSPACE)
+        actions.perform()
+        actions.send_keys('2')
+        actions.perform()
+        time.sleep(1)
+            
 
 def main():
     #Open linkedin.com
