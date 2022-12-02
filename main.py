@@ -18,7 +18,9 @@ email = "pclass184@gmail.com"
 passW = "-Y5bKwD5_QSZNdE"
 actions = ActionChains(browser)
 
-skills = {"java","c++"}
+skills = ["java","c++","linux","sql","python"]
+YearofExp = [2,3,5,6,7]
+YoExp = dict(zip(skills,YearofExp))
 
 #Login to website
 def login():
@@ -43,7 +45,7 @@ def applyToJob():
     browser.find_element(By.XPATH,"//span[(contains(., 'Phone') or contains(., 'phone')) and not(contains(., 'country'))]").click() 
     time.sleep(1)
     #Type into phone number text field
-    for i in range(10):
+    for i in range(20):
         actions.send_keys(Keys.BACKSPACE)
         actions.perform()
     actions.send_keys('111-111-1111')
@@ -160,7 +162,7 @@ def checkExperience():
     experienceQs = browser.find_elements(By.XPATH,"//span[((contains(., 'experience') or contains(., 'Experience')) or contains(., 'years')) and contains(@class, 't-14')]")
     for question in experienceQs:
         question.click()
-        time.sleep(1)
+        
         for i in range(3):
             actions.send_keys(Keys.BACKSPACE)
         actions.perform()
@@ -214,16 +216,21 @@ def submitApplication():
 
 def checkSkills():
     for skill in skills:
-        relevantSkill = browser.find_elements(By.XPATH,f"//span[contains(translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{skill}') and contains(@class, 't-14') ]")
+        xPath = f"//span[contains(translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{skill}') and contains(@class, 't-14') ]"
+        print(xPath)
+        relevantSkill = browser.find_elements(By.XPATH,xPath)
         
-        if len(relevantSkill) > 0:
-            relevantSkill[0].click()
-        for i in range(5):
-            actions.send_keys(Keys.BACKSPACE)
-        actions.perform()
-        actions.send_keys('2')
-        actions.perform()
-        time.sleep(1)
+        if len(relevantSkill) < 1:
+            continue
+        print(f"{skill} found. {len(relevantSkill)}")
+        for n in range(len(relevantSkill)):
+            relevantSkill[n].click()
+            for i in range(5):
+                actions.send_keys(Keys.BACKSPACE)
+            actions.perform()
+            actions.send_keys(str(YoExp.get(skill)))
+            actions.perform()
+            time.sleep(1)
             
 
 def main():
