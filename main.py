@@ -9,18 +9,17 @@ import unittest
 from selenium.webdriver.common.action_chains import ActionChains
 import traceback
 
-
-
-#Open microsoft edge
-browser = webdriver.Edge()
-browser.maximize_window()
+#Set default values
 email = "pclass184@gmail.com"
 passW = "-Y5bKwD5_QSZNdE"
-actions = ActionChains(browser)
-
+startURL = "https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords=software%20engineer"
+#For Skills
 skills = ["java","c++","linux","sql","python"]
 YearofExp = [2,3,5,6,7]
 YoExp = dict(zip(skills,YearofExp))
+#For UI
+sep = "------------------------------------------"
+phoneNo = "222-222-2222"
 
 #Login to website
 def login():
@@ -32,7 +31,7 @@ def login():
 
 #Filter jobs by easy apply
 def filterJobs():
-    browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords=software%20engineer")
+    browser.get(startURL)
     WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']")))
     browser.find_element(By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']").click()
     
@@ -47,7 +46,7 @@ def applyToJob():
     for i in range(20):
         actions.send_keys(Keys.BACKSPACE)
         actions.perform()
-    actions.send_keys('111-111-1111')
+    actions.send_keys(phoneNo)
     actions.perform()
     #Check to see if application is simple (Only need to hit submit button)
     submitButton = browser.find_elements(By.XPATH,"//button[@aria-label='Submit application']")
@@ -75,10 +74,10 @@ def applyToJob():
     iterations = 0
     while submitted == False and iterations < 4:
         try:
-            submitted = nextButton()
-            print(submitted)
             iterations += 1
             print(iterations)
+            submitted = nextButton()
+            print(submitted)
         except:
             print("next button exception in method ApplyToJob()")
     exitApplication()
@@ -111,7 +110,7 @@ def nextButton():
         submitApplication()
         print("Application submitted")
         return True
-    
+
     try:    
         browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
     except:
@@ -128,8 +127,7 @@ def visaCheck():
         return
     else:
         print("Checking visa")
-    
-    
+        
     try:
         legend = visaExist[0].find_element(By.XPATH,"./..")
         #print(legend.tag_name)
@@ -156,7 +154,7 @@ def exitApplication():
     except:
         print("Cancel button not found")
 
-#If questions asks for years + experience, type 1 in text field
+#If questions asks for years + experience - Default value 1 year
 def checkExperience():
     experienceQs = browser.find_elements(By.XPATH,"//span[((contains(., 'experience') or contains(., 'Experience')) or contains(., 'years')) and contains(@class, 't-14')]")
     for question in experienceQs:
@@ -184,7 +182,7 @@ def answerMultipleChoice():
         actions.click(elements)
         actions.perform()
     
-
+#Answer drop down menu questions - Default value "Yes"
 def answerSelect():
     dropDown = browser.find_elements(By.XPATH,"//select[@class='  fb-dropdown__select']")
     for items in dropDown:
@@ -211,6 +209,7 @@ def submitApplication():
     print(f"Submit button length is: {len(submitButton)}")
     return False
 
+#Go through skills and set according value
 def checkSkills():
     for skill in skills:
         xPath = f"//span[contains(translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{skill}') and contains(@class, 't-14') ]"
@@ -227,11 +226,44 @@ def checkSkills():
             actions.perform()
             actions.send_keys(str(YoExp.get(skill)))
             actions.perform()
-            
-            
+
+#Set up driver
+def initBrowser():
+    global browser
+    global actions
+    browser = webdriver.Edge()
+    browser.maximize_window()
+    actions = ActionChains(browser)
+
+#Create user menu
+def makeUI():
+    print(f"{sep}\nWelcome to the job application automator\n{sep}\nPlease select an option: \n" +
+          "1. Run Program\n2. Add experience\n3. Change job query\n4. Change Phone Number")
+    global phoneNo
+    validChoice = True
+
+    while validChoice == True:
+        userChoice = input("Enter option: ")
+        match userChoice:
+            case '1':
+                #Break out of loop and start program
+                validChoice = False
+                print("main")
+            case '2':
+                print("main")    
+            case '3':
+                print("main")
+            case '4':
+                phoneNo = input("Enter a phone number: ")
+                print("main")
+            case _:
+                print('Invalid input')
 
 def main():
+    makeUI()
+            
     #Open linkedin.com
+    initBrowser()
     browser.get('http://www.linkedin.com')
     login()
     #time.sleep(15) #Remove if no captcha
@@ -254,9 +286,7 @@ def main():
             time.sleep(2)
         #Update url to load new job listings
         x += 10
-        browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3360953405&geoId=103644278&keywords=software%20engineer&location=United%20States&refresh=true&start="+str(x))
-        WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']")))
-        browser.find_element(By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']").click()
+        browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3376704443&f_AL=true&geoId=103644278&location=United%20States&refresh=true&start="+str(x))
         time.sleep(4)
         listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
     
