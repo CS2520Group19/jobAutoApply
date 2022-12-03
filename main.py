@@ -32,7 +32,7 @@ def login():
 
 #Filter jobs by easy apply
 def filterJobs():
-    browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3358625542&f_AL=true&geoId=103644278&keywords=software%20engineer&location=United%20States&refresh=true&start=8")
+    browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords=software%20engineer")
     WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']")))
     browser.find_element(By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']").click()
     
@@ -89,18 +89,17 @@ def nextButton():
 
     time.sleep(1)
     checkExperience()
-    time.sleep(1)
     checkSkills()
     #Answer all tasks
     try:
         answerMultipleChoice()
-        time.sleep(1)
+        
         visaCheck()
-        time.sleep(1)
+        
         answerSelect()
-        time.sleep(1)
+        
         languageProficiency()
-        time.sleep(1)
+        
     except:
         print("nextButton() - Error answering questions")
     
@@ -169,7 +168,7 @@ def checkExperience():
         actions.perform()
         actions.send_keys('1')
         actions.perform()
-        time.sleep(1)
+
 
 #Answer drop down menu with native english speaking
 def languageProficiency():
@@ -178,7 +177,6 @@ def languageProficiency():
     time.sleep(1)
     actions.send_keys("native")
     actions.perform()
-    time.sleep(1)
 
 #Answer all multiple choice quesitons with Yes
 def answerMultipleChoice():
@@ -192,7 +190,6 @@ def answerSelect():
     dropDown = browser.find_elements(By.XPATH,"//select[@class='  fb-dropdown__select']")
     for items in dropDown:
         items.click()
-        time.sleep(1)
         actions.send_keys("yes")
         actions.perform()
     time.sleep(1)
@@ -218,7 +215,7 @@ def submitApplication():
 def checkSkills():
     for skill in skills:
         xPath = f"//span[contains(translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{skill}') and contains(@class, 't-14') ]"
-        print(xPath)
+        #print(xPath)
         relevantSkill = browser.find_elements(By.XPATH,xPath)
         
         if len(relevantSkill) < 1:
