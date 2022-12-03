@@ -20,6 +20,7 @@ YoExp = dict(zip(skills,YearofExp))
 #For UI
 sep = "------------------------------------------"
 phoneNo = "222-222-2222"
+salary = "60000"
 
 #Login to website
 def login():
@@ -95,7 +96,7 @@ def nextButton():
         visaCheck()
         
         answerSelect()
-        
+        checkSalary()
         languageProficiency()
         
     except:
@@ -159,14 +160,36 @@ def checkExperience():
     experienceQs = browser.find_elements(By.XPATH,"//span[((contains(., 'experience') or contains(., 'Experience')) or contains(., 'years')) and contains(@class, 't-14')]")
     for question in experienceQs:
         question.click()
-        
         for i in range(3):
             actions.send_keys(Keys.BACKSPACE)
         actions.perform()
         actions.send_keys('1')
         actions.perform()
 
-
+#Check for salary questions
+def checkSalary():
+    global salary
+    #Check for annual pay
+    SalaryQs = browser.find_elements(By.XPATH,"//span[(contains(., 'compensation') or contains(., 'annual') or contains(., 'pay')) and contains(@class, 't-14')]")
+    for question in SalaryQs:
+        question.click()
+        for i in range(8):
+            actions.send_keys(Keys.BACKSPACE)
+        actions.perform()
+        actions.send_keys(salary)
+        actions.perform()
+    
+    #Check for hourly rate
+    hourlySalary = salary/(52*40)
+    SalaryQs = browser.find_elements(By.XPATH,"//span[(contains(., 'rate') or contains(., 'hour')) and contains(@class, 't-14')]")
+    for question in SalaryQs:
+        question.click()
+        for i in range(8):
+            actions.send_keys(Keys.BACKSPACE)
+        actions.perform()
+        actions.send_keys(hourlySalary)
+        actions.perform()
+    
 #Answer drop down menu with native english speaking
 def languageProficiency():
     dropDown = browser.find_element(By.XPATH,"//span[contains(., 'English') and contains(@class, 't-14')]")
