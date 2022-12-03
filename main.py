@@ -40,10 +40,9 @@ def applyToJob():
     time.sleep(2)
     #Find apply button
     browser.find_element(By.XPATH,"//div[@class='jobs-apply-button--top-card']").click()
-    time.sleep(2)
+    time.sleep(1)
     #Select phone number text field
     browser.find_element(By.XPATH,"//span[(contains(., 'Phone') or contains(., 'phone')) and not(contains(., 'country'))]").click() 
-    time.sleep(1)
     #Type into phone number text field
     for i in range(20):
         actions.send_keys(Keys.BACKSPACE)
@@ -70,7 +69,7 @@ def applyToJob():
             browser.find_element(By.XPATH,"//button[@aria-label='Continue to next step']").click()
         except:
             print("Check resume screen failed.")
-        time.sleep(1)
+        
     
     submitted = False
     iterations = 0
@@ -83,7 +82,7 @@ def applyToJob():
         except:
             print("next button exception in method ApplyToJob()")
     exitApplication()
-    time.sleep(3)
+    
     
 def nextButton():
 
@@ -108,7 +107,7 @@ def nextButton():
     #If it is review button, begin to click submit
     if len(reviewApp)> 0:
         reviewApp[0].click()
-        time.sleep(2)
+        time.sleep(1)
         submitApplication()
         print("Application submitted")
         return True
@@ -152,7 +151,7 @@ def visaCheck():
 def exitApplication():
     try:
         browser.find_element(By.XPATH,"//li-icon[@class='artdeco-button__icon' and @type='cancel-icon']").click()
-        time.sleep(2)
+        WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.XPATH,"//span[contains(., 'Discard')]")))
         browser.find_element(By.XPATH,"//span[contains(., 'Discard')]").click() 
     except:
         print("Cancel button not found")
@@ -184,7 +183,7 @@ def answerMultipleChoice():
     for elements in yesAnswer:
         actions.click(elements)
         actions.perform()
-    time.sleep(1)
+    
 
 def answerSelect():
     dropDown = browser.find_elements(By.XPATH,"//select[@class='  fb-dropdown__select']")
@@ -192,7 +191,7 @@ def answerSelect():
         items.click()
         actions.send_keys("yes")
         actions.perform()
-    time.sleep(1)
+    
 
 #Click submit button
 def submitApplication():
@@ -204,7 +203,7 @@ def submitApplication():
     submitButton = browser.find_elements(By.XPATH,"//button[@aria-label='Submit application']")
     if len(submitButton) > 0:
         print("submitting")
-        time.sleep(5)
+        time.sleep(3)
         #submitButton[0].click() #commented out so application is not sent for test run
         #time.sleep(2)
         #browser.find_element(By.XPATH,"//li-icon[@type='cancel-icon' and @class='artdeco-button__icon']").click()
@@ -228,7 +227,7 @@ def checkSkills():
             actions.perform()
             actions.send_keys(str(YoExp.get(skill)))
             actions.perform()
-            time.sleep(1)
+            
             
 
 def main():
@@ -256,6 +255,8 @@ def main():
         #Update url to load new job listings
         x += 10
         browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3360953405&geoId=103644278&keywords=software%20engineer&location=United%20States&refresh=true&start="+str(x))
+        WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']")))
+        browser.find_element(By.CSS_SELECTOR, "[aria-label='Easy Apply filter.']").click()
         time.sleep(4)
         listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
     
