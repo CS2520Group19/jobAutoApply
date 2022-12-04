@@ -283,7 +283,9 @@ def makeUI():
                 YearofExp = settings.fetch_settings().experience.values()
                 YoExp = settings.fetch_settings().experience
             case '3':
+                global startURL
                 options.change_job_query()
+                startURL = f"https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords={settings.fetch_settings().job_query}"
             case '4':
                 options.change_phone_number()
 
