@@ -82,6 +82,7 @@ def applyToJob():
             submitted = nextButton()
             print(submitted)
         except:
+            traceback.print_exc()
             print("next button exception in method ApplyToJob()")
     exitApplication()
     
@@ -94,14 +95,14 @@ def nextButton():
     #Answer all tasks
     try:
         answerMultipleChoice()
-        
         visaCheck()
-        
+        languageProficiency()
         answerSelect()
         checkSalary()
         languageProficiency()
         
     except:
+        traceback.print_exc()
         print("nextButton() - Error answering questions")
     
     #Check if next button is review application button
@@ -146,7 +147,7 @@ def visaCheck():
         actions.click(noInput)
         actions.perform()
     except:
-        traceback.print_exception()
+        traceback.print_exc()
     
 #Exit the job application (Used when application is not supported)
 def exitApplication():
@@ -182,7 +183,7 @@ def checkSalary():
         actions.perform()
     
     #Check for hourly rate
-    hourlySalary = salary/(52*40)
+    hourlySalary = int(salary)/(52*40)
     SalaryQs = browser.find_elements(By.XPATH,"//span[(contains(., 'rate') or contains(., 'hour')) and contains(@class, 't-14')]")
     for question in SalaryQs:
         question.click()
@@ -194,11 +195,12 @@ def checkSalary():
     
 #Answer drop down menu with native english speaking
 def languageProficiency():
-    dropDown = browser.find_element(By.XPATH,"//span[contains(., 'English') and contains(@class, 't-14')]")
-    dropDown.click()
-    time.sleep(1)
-    actions.send_keys("native")
-    actions.perform()
+    dropDown = browser.find_elements(By.XPATH,"//span[contains(., 'English') and contains(@class, 't-14')]")
+    for elements in dropDown:
+        elements.click()
+        time.sleep(1)
+        actions.send_keys("native")
+        actions.perform()
 
 #Answer all multiple choice quesitons with Yes
 def answerMultipleChoice():
