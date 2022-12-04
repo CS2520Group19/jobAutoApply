@@ -8,18 +8,20 @@ import time
 import unittest
 from selenium.webdriver.common.action_chains import ActionChains
 import traceback
+import settings
+import options
 
 #Set default values
 email = "pclass184@gmail.com"
 passW = "-Y5bKwD5_QSZNdE"
-startURL = "https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords=software%20engineer"
+startURL = f"https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords={settings.fetch_settings().job_query}"
 #For Skills
-skills = ["java","c++","linux","sql","python"]
-YearofExp = [2,3,5,6,7]
-YoExp = dict(zip(skills,YearofExp))
+skills = settings.fetch_settings().experience.keys()
+YearofExp = settings.fetch_settings().experience.values()
+YoExp = settings.fetch_settings().experience
 #For UI
 sep = "------------------------------------------"
-phoneNo = "222-222-2222"
+phoneNo = settings.fetch_settings().phone_number
 salary = "60000"
 
 #Login to website
@@ -262,25 +264,37 @@ def initBrowser():
 def makeUI():
     print(f"{sep}\nWelcome to the job application automator\n{sep}\nPlease select an option: \n" +
           "1. Run Program\n2. Add experience\n3. Change job query\n4. Change Phone Number")
-    global phoneNo
+    
     validChoice = True
-
     while validChoice == True:
         userChoice = input("Enter option: ")
         match userChoice:
             case '1':
                 #Break out of loop and start program
                 validChoice = False
-                print("main")
             case '2':
-                print("main")    
+                options.add_experience()
+
+                # Make sure changes get updated for current session
+                global skills
+                global YearofExp
+                global YoExp
+                skills = settings.fetch_settings().experience.keys()
+                YearofExp = settings.fetch_settings().experience.values()
+                YoExp = settings.fetch_settings().experience
             case '3':
-                print("main")
+                global startURL
+                options.change_job_query()
+                startURL = f"https://www.linkedin.com/jobs/search/?currentJobId=3377670207&keywords={settings.fetch_settings().job_query}"
             case '4':
-                phoneNo = input("Enter a phone number: ")
-                print("main")
+                options.change_phone_number()
+
+                # Make sure changes get updated for current session
+                global phoneNo
+                phoneNo = settings.fetch_settings().phone_number
             case _:
                 print('Invalid input')
+#For UI
 
 def main():
     makeUI()
@@ -296,7 +310,7 @@ def main():
     #List of jobs
     listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
     #Iterate through each job
-    x= 0 #Number of listings to go through
+    x = 0 #Number of listings to go through
     
     #Go through 50 listings
     while(x < 50):
@@ -318,4 +332,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
