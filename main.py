@@ -325,8 +325,8 @@ def main():
     #Iterate through each job
     x = 0 #Number of listings to go through
     
-    #Go through 50 listings
-    while(x < 50):
+    #Go through 500 listings
+    while(x < 500):
         for listing in listings:
             try:
                 listing.click()
