@@ -1,3 +1,6 @@
+#Job Application Bot
+#https://github.com/CS2520Group19/jobAutoApply
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -175,23 +178,31 @@ def checkSalary():
     #Check for annual pay
     SalaryQs = browser.find_elements(By.XPATH,"//span[(contains(., 'compensation') or contains(., 'annual') or contains(., 'pay')) and contains(@class, 't-14')]")
     for question in SalaryQs:
-        question.click()
-        for i in range(8):
-            actions.send_keys(Keys.BACKSPACE)
-        actions.perform()
-        actions.send_keys(salary)
-        actions.perform()
+        try:
+            question.click()
+            for i in range(8):
+                actions.send_keys(Keys.BACKSPACE)
+            actions.perform()
+            actions.send_keys(salary)
+            actions.perform()
+        except:
+            traceback.print_exc()
+            print("Annual salary not found.")
     
     #Check for hourly rate
     hourlySalary = int(salary)/(52*40)
     SalaryQs = browser.find_elements(By.XPATH,"//span[(contains(., 'rate') or contains(., 'hour')) and contains(@class, 't-14')]")
     for question in SalaryQs:
-        question.click()
-        for i in range(8):
-            actions.send_keys(Keys.BACKSPACE)
-        actions.perform()
-        actions.send_keys(hourlySalary)
-        actions.perform()
+        try:
+            question.click()
+            for i in range(8):
+                actions.send_keys(Keys.BACKSPACE)
+            actions.perform()
+            actions.send_keys(hourlySalary)
+            actions.perform()
+        except:
+            traceback.print_exc()
+            print("Hourly salary not found.")
     
 #Answer drop down menu with native english speaking
 def languageProficiency():
@@ -228,10 +239,10 @@ def submitApplication():
     submitButton = browser.find_elements(By.XPATH,"//button[@aria-label='Submit application']")
     if len(submitButton) > 0:
         print("submitting")
-        time.sleep(3)
-        #submitButton[0].click() #commented out so application is not sent for test run
-        #time.sleep(2)
-        #browser.find_element(By.XPATH,"//li-icon[@type='cancel-icon' and @class='artdeco-button__icon']").click()
+        #time.sleep(3)
+        submitButton[0].click() #commented out so application is not sent for test run
+        time.sleep(2)
+        browser.find_element(By.XPATH,"//li-icon[@type='cancel-icon' and @class='artdeco-button__icon']").click()
         return True
     print(f"Submit button length is: {len(submitButton)}")
     return False
@@ -322,10 +333,10 @@ def main():
                 applyToJob()
             except:
                 traceback.print_exc()
-            time.sleep(2)
+            
         #Update url to load new job listings
         x += 10
-        browser.get("https://www.linkedin.com/jobs/search/?currentJobId=3376704443&f_AL=true&geoId=103644278&location=United%20States&refresh=true&start="+str(x))
+        browser.get(f"https://www.linkedin.com/jobs/search/?currentJobId=3378116716&f_AL=true&geoId=103644278&keywords={settings.fetch_settings().job_query}&location=United%20States&refresh=true&start="+str(x))
         time.sleep(4)
         listings = browser.find_elements(By.CSS_SELECTOR,".job-card-container--clickable")
     
