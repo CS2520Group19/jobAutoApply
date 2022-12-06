@@ -169,7 +169,7 @@ def checkExperience():
         for i in range(3):
             actions.send_keys(Keys.BACKSPACE)
         actions.perform()
-        actions.send_keys('1')
+        actions.send_keys('0')
         actions.perform()
 
 #Check for salary questions
